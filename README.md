@@ -1,10 +1,8 @@
-# Java Backend Interview & Engineering Notes
+# Java Backend Engineering Notes
 
 A structured reference for Java Backend Developer / Senior Java Backend interview preparation.
 
 The purpose is to explain concepts deeply enough to discuss **definition, internal working, practical use, trade-offs and production troubleshooting**.
-
-> Learning areas are not presented as professional experience unless explicitly stated.
 
 ## Core Java
 
@@ -32,7 +30,7 @@ equals()
 value
 ~~~
 
-Understand load factor, resizing, collision behavior, mutable keys and the equals/hashCode contract.
+ load factor, resizing, collision behavior, mutable keys and the equals/hashCode contract.
 
 ### Streams
 
@@ -68,8 +66,6 @@ The key backend question is not only "how do I create a thread?" but "what happe
 
 ## JVM
 
-Understand:
-
 ~~~text
 Java source
    |
@@ -86,7 +82,7 @@ JVM
    +-- JIT
 ~~~
 
-Interview areas:
+Important areas:
 - Heap vs stack
 - Metaspace
 - Class loading
@@ -138,7 +134,7 @@ Transient -> Managed -> Detached
               Removed
 ~~~
 
-Study:
+check on:
 - Persistence context
 - Dirty checking
 - First-level cache
@@ -153,7 +149,6 @@ Study:
 
 ## SQL / Oracle
 
-Interview practice should include:
 - Joins
 - Aggregation
 - Subqueries
@@ -170,7 +165,6 @@ Interview practice should include:
 
 Performance investigation:
 
-~~~text
 Slow API
   -> application timing
   -> SQL timing
@@ -204,14 +198,13 @@ Producer -> Topic -> Partition -> Consumer Group
                        Offset
 ~~~
 
-Study partitions, keys, ordering, offsets, consumer groups, rebalancing, delivery semantics, duplicate processing and idempotent consumers.
+ partitions, keys, ordering, offsets, consumer groups, rebalancing, delivery semantics, duplicate processing and idempotent consumers.
 
 ## Security
 
 Spring Security:
 - Authentication
 - Authorization
-- Filter chain
 - Password hashing
 - Roles/authorities
 - Method security
@@ -237,15 +230,6 @@ Integration test -> multiple real components
 End-to-end -> complete business flow
 ~~~
 
-JUnit/Mockito topics:
-- Arrange/Act/Assert
-- Mocking
-- Stubbing
-- Verification
-- Argument matchers
-- Parameterized tests
-- Edge cases
-
 Modern testing topics:
 - Testcontainers
 - Real database integration
@@ -265,9 +249,7 @@ Docker:
 - Multi-stage builds
 - Health checks
 
-CI/CD:
 
-~~~text
 Commit -> Build -> Unit Tests -> Integration Tests -> Package/Image -> Deploy
 ~~~
 
@@ -276,8 +258,6 @@ Commit -> Build -> Unit Tests -> Integration Tests -> Package/Image -> Deploy
 Keep building knowledge in:
 - Virtual threads
 - Structured concurrency concepts
-- OpenTelemetry
-- Redis/caching
 - Kubernetes fundamentals
 - AWS
 - API gateways
@@ -285,17 +265,3 @@ Keep building knowledge in:
 - Profiling
 - Load testing
 
-## Interview answer framework
-
-For each topic practice:
-
-1. Definition
-2. Why it exists
-3. Internal working
-4. Practical example
-5. Advantages
-6. Limitations/trade-offs
-7. Production use case
-8. Follow-up questions
-
-This turns a list of keywords into an explainable engineering skill.
