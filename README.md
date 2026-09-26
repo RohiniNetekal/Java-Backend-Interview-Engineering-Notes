@@ -265,3 +265,95 @@ Keep building knowledge in:
 - Profiling
 - Load testing
 
+
+
+## Redis & Caching
+
+Caching is a performance optimization, but it introduces consistency and failure-handling decisions. A strong backend design should explain the cache policy, not simply say "use Redis".
+
+### Cache-aside
+
+The application checks Redis first. On a miss it reads the database, stores the result with a TTL, and returns it.
+
+```text
+Request -> Service -> Redis
+                    |   |
+                  HIT  MISS
+                    |   |
+                    |   v
+                    | Database
+                    |   |
+                    +<--+
+```
+
+For a write, a common baseline is to update the database successfully and then evict the corresponding cache entry. The next read repopulates it.
+
+### Spring example
+
+```java
+@Cacheable(cacheNames = "merchant", key = "#merchantId")
+public MerchantResponse getMerchant(Long merchantId) {
+    return repository.findById(merchantId)
+            .map(this::toResponse)
+            .orElseThrow(() -> new MerchantNotFoundException(merchantId));
+}
+
+@CacheEvict(cacheNames = "merchant", key = "#merchantId")
+public void updateMerchant(Long merchantId, UpdateMerchantRequest request) {
+    // validate and update database
+}
+```
+
+### Key and TTL design
+
+Prefer deterministic, versioned keys such as:
+
+```text
+merchant:v1:101
+merchant:v1:102
+```
+
+TTL should reflect the business tolerance for stale data. Longer TTL improves hit rate but increases the stale-data window; shorter TTL improves freshness but causes more misses.
+
+### Cache stampede
+
+If a popular key expires and thousands of requests miss at once, all of them may hit the database. Learn TTL jitter, request coalescing/single-flight, controlled refresh and carefully scoped locking.
+
+### Cache penetration and hot keys
+
+Repeated requests for nonexistent data can cause repeated database misses. Short-lived negative caching, validation and rate limiting can help. A hot key can also overload a single cache path and may require local caching, request coalescing or another scaling strategy.
+
+### Redis failure
+
+If Redis is an optimization rather than the source of truth, a cache outage may fall back to the database. But a large simultaneous fallback can overload the database. Therefore define Redis timeouts, database capacity, rate limits, circuit breaking/degradation and monitoring before calling the design production-ready.
+
+### Observability
+
+Track at least:
+- cache hit/miss rate
+- Redis latency and errors
+- evictions and memory usage
+- hot keys
+- database load before/after caching
+
+### Testing
+
+Test cache hits, misses, invalidation and failure behavior. For integration tests, Testcontainers can run a real Redis instance so serialization, TTL and actual Redis interactions are exercised rather than only mocked.
+
+### Common interview questions
+
+1. How does cache-aside work?
+2. TTL vs invalidation?
+3. How does cache stampede happen?
+4. What happens to the database if Redis goes down?
+5. How would you design a cache key?
+6. When should you avoid caching?
+7. How would you test Redis integration?
+
+### Practical exercises
+
+- [ ] Add Redis cache-aside to a Spring Boot read API
+- [ ] Configure TTL and cache eviction on updates
+- [ ] Add a Testcontainers Redis integration test
+- [ ] Measure cache hit/miss behavior
+- [ ] Simulate Redis failure and document the fallback strategy
