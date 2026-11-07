@@ -171,7 +171,6 @@ Slow API
   -> execution plan
   -> scan/join/sort analysis
   -> index/statistics/data-volume review
-~~~
 
 Do not add an index automatically; understand the query pattern and execution plan first.
 
@@ -190,6 +189,21 @@ Know:
 - Outbox pattern
 - Distributed tracing
 
+### Transactional outbox
+
+The outbox solves the dual-write problem when one business operation must update a relational database and publish a Kafka event. The service commits the business row and an outbox row in the same database transaction. A separate publisher sends committed rows to Kafka and marks them published after broker acknowledgement.
+
+It does not create a distributed transaction with Kafka. A crash after Kafka acknowledges but before the outbox status update can cause a duplicate, so the consumer still needs idempotent processing (for example, an inbox table with a unique `consumer_name + event_id` key).
+
+Study the full [Spring Boot + Oracle + Kafka transactional outbox walkthrough](https://github.com/RohiniNetekal/Microservices-Engineering-Lab/blob/master/docs/transactional-outbox-pattern.md), including `FOR UPDATE SKIP LOCKED`, leases, retries, ordering, failure tests and operational metrics.
+
+Interview checks:
+1. Why can a normal Spring `@Transactional` method not atomically commit Oracle and Kafka?
+2. What is the dual-write failure window?
+3. Why is outbox delivery normally at-least-once?
+4. How do leases and `SKIP LOCKED` coordinate multiple publisher workers?
+5. Why does a Kafka key alone not guarantee order across concurrent publishers?
+
 ## Kafka
 
 ~~~text
@@ -198,7 +212,7 @@ Producer -> Topic -> Partition -> Consumer Group
                        Offset
 ~~~
 
- partitions, keys, ordering, offsets, consumer groups, rebalancing, delivery semantics, duplicate processing and idempotent consumers.
+partitions, keys, ordering, offsets, consumer groups, rebalancing, delivery semantics, duplicate processing and idempotent consumers.
 
 ## Security
 
@@ -249,9 +263,7 @@ Docker:
 - Multi-stage builds
 - Health checks
 
-
 Commit -> Build -> Unit Tests -> Integration Tests -> Package/Image -> Deploy
-~~~
 
 ## Modern backend topics
 
@@ -264,8 +276,6 @@ Keep building knowledge in:
 - Resilience patterns
 - Profiling
 - Load testing
-
-
 
 ## Redis & Caching
 
