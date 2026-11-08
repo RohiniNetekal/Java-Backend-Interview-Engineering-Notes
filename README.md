@@ -204,6 +204,32 @@ Interview checks:
 4. How do leases and `SKIP LOCKED` coordinate multiple publisher workers?
 5. Why does a Kafka key alone not guarantee order across concurrent publishers?
 
+## Observability & Distributed Tracing
+
+Observability combines:
+- Logs — what happened?
+- Metrics — how often and how much?
+- Traces — where did one request spend time?
+
+A trace contains spans. The trace ID identifies the end-to-end operation; span IDs identify individual timed operations and their parent-child relationships. W3C trace context is commonly propagated using the HTTP traceparent header. Spring Boot uses Micrometer Observation/Tracing to connect application instrumentation to a tracing backend.
+
+For a Spring Boot microservice flow, know how to:
+- correlate log lines with traceId/spanId;
+- create a custom Observation around a business operation;
+- propagate context through auto-configured HTTP clients;
+- enable observations for both Spring Kafka templates and listeners;
+- preserve context across a delayed outbox publisher when the original request thread has ended;
+- distinguish application latency from Oracle/JDBC, connection-pool and consumer-lag problems.
+
+Read the [Distributed Tracing and Observability guide](https://github.com/RohiniNetekal/Microservices-Engineering-Lab/blob/master/docs/distributed-tracing-observability.md) for configuration, code, outbox context persistence, sampling, metric cardinality, incident triage and exercises.
+
+Interview checks:
+1. Why are metrics, logs and traces complementary rather than interchangeable?
+2. What is the difference between a trace ID and a span ID?
+3. Why can a raw HTTP client lose automatic trace propagation?
+4. Why must Kafka producer and consumer observations both be enabled?
+5. Why does an asynchronous outbox worker need an explicit context strategy?
+
 ## Kafka
 
 ~~~text
