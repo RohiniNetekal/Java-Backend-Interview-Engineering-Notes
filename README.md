@@ -242,6 +242,29 @@ partitions, keys, ordering, offsets, consumer groups, rebalancing, delivery sema
 
 ## Security
 
+### OAuth2 JWT Resource Server
+
+A resource server validates an access token issued by a separate authorization server. Know the Spring Security flow:
+
+~~~text
+BearerTokenAuthenticationFilter
+ -> JwtAuthenticationProvider
+ -> JwtDecoder (signature + trusted JWKS)
+ -> issuer / timestamp / audience validators
+ -> JwtAuthenticationConverter
+ -> SecurityContext and authorization
+~~~
+
+Key distinctions:
+- OAuth 2.0 is an authorization framework; OIDC adds identity; JWT is a token format.
+- iss identifies the issuer; aud identifies the intended API.
+- Scopes normally map to SCOPE_...; roles such as ROLE_ADMIN are a separate authority model.
+- 401 means authentication failed; 403 means the authenticated caller lacks permission.
+- A valid scope does not replace tenant/resource ownership checks.
+- MockMvc's jwt() helper tests authorization decisions but bypasses the real decoder and does not test signature/issuer/audience validation.
+
+Read the [Spring Boot + Spring Security OAuth2 JWT resource-server implementation guide](https://github.com/RohiniNetekal/JAVA-backend-developer/blob/main/spring-security/jwt/OAUTH2_RESOURCE_SERVER_IMPLEMENTATION.md) for configuration, code, testing and trade-offs.
+
 Spring Security:
 - Authentication
 - Authorization
