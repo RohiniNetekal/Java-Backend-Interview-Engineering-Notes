@@ -416,3 +416,25 @@ Test cache hits, misses, invalidation and failure behavior. For integration test
 - [ ] Add a Testcontainers Redis integration test
 - [ ] Measure cache hit/miss behavior
 - [ ] Simulate Redis failure and document the fallback strategy
+
+
+## CI/CD and build pipeline
+
+Be able to explain the pipeline from source commit to deployed artifact:
+
+- CI validates changes; continuous delivery keeps a verified release ready; continuous deployment releases qualifying changes automatically.
+- Maven verify executes the preceding default lifecycle phases. Surefire normally runs unit tests; Failsafe runs configured integration tests through integration-test and verify.
+- Testcontainers starts disposable dependencies so integration tests can exercise real database constraints, transactions and Kafka behavior.
+- GitHub Actions should use explicit least-privilege permissions, a supported JDK matrix and Maven dependency caching.
+- Build an immutable container image after tests, then promote the same digest across environments.
+- Prefer protected environments and OIDC short-lived credentials for cloud deployment; do not expose deployment secrets to untrusted pull requests.
+
+Interview checks:
+
+1. Why can Maven package miss configured integration verification that Maven verify would run?
+2. What is the difference between Surefire and Failsafe?
+3. When would you choose Mockito versus Testcontainers?
+4. Why is pull_request_target dangerous when it executes fork code?
+5. Why should production deploy the same image digest that passed staging?
+
+See the [Java backend CI/CD implementation guide](https://github.com/RohiniNetekal/Git-Engineering-Workflow-Lab/blob/main/docs/java-backend-ci-cd.md) for the workflow template and detailed trade-offs.
